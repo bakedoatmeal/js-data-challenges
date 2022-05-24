@@ -145,7 +145,15 @@ const getMinFare = (data) => {
 // passengers are missing data for fare. Be sure to filter these! 
 
 const getMaxFare = (data) => {
-	return 0
+	const passengers = data.filter((passenger) => 'fare' in passenger.fields)
+	const max = passengers.reduce((prev, passenger) => {
+		if (passenger.fields.fare > prev) {
+			return passenger.fields.fare
+		} else {
+			return prev
+		}
+	}, 0.0)
+	return max
 }
 
 // 12 ---------------------------------------------------------------
@@ -153,7 +161,7 @@ const getMaxFare = (data) => {
 // "sex" property that is either "male" or "female"
 
 const getPassengersByGender = (data, gender) => {
-	return 0
+	return data.filter((passenger) => passenger.fields.sex === gender).length
 }
 
 // 13 ---------------------------------------------------------------
@@ -162,14 +170,14 @@ const getPassengersByGender = (data, gender) => {
 // to the "sex" property and check the "survived" property. 
 
 const getSurvivorsByGender = (data, gender) => {
-	return 0
+	return data.filter((passenger) => passenger.fields.sex === gender && passenger.fields.survived === 'Yes').length
 }
 
 // 14 ---------------------------------------------------------------
 // Return the number of passengers who did not survived by gender. 
 
 const getCasualitiesByGender = (data, gender) => {
-	return 0
+	return data.filter((passenger) => passenger.fields.sex === gender && passenger.fields.survived === 'No').length
 }
 
 // 15 --------------------------------------------------------------
@@ -178,7 +186,8 @@ const getCasualitiesByGender = (data, gender) => {
 // where the fare is missing! 
 
 const getTotalFare = (data) => {
-	return 0
+	const passengers = data.filter((passenger) => 'fare' in passenger.fields)
+	return passengers.reduce((prev, passenger) => prev + passenger.fields.fare, 0)
 }
 
 // 16 --------------------------------------------------------------
@@ -187,7 +196,10 @@ const getTotalFare = (data) => {
 // missing a fare! 
 
 const getAverageFare = (data) => {
-	return 0
+	const passengerCount = data.filter((passenger) => 'fare' in passenger.fields).length
+	const passengers = data.filter((passenger) => 'fare' in passenger.fields)
+	const total = passengers.reduce((prev, passenger) => prev + passenger.fields.fare, 0)
+	return total/passengerCount
 }
 
 // 17 --------------------------------------------------------------
@@ -199,7 +211,21 @@ const getAverageFare = (data) => {
 // 4 + 5 = 9 / 2 median is 4.5!
 
 const getMedianFare = (data) => {
-	return 0
+	const passengers = data.filter((passenger) => 'fare' in passenger.fields)
+	const passengerCount = passengers.length
+	const fares = []
+	for (let i = 0; i < passengers.length; i++) {
+		fares.push(passengers[i].fields.fare)
+	}
+
+	fares.sort((a, b) => a - b)
+	const middle = Math.floor(passengerCount/2)
+
+	if (passengerCount % 2 === 1) {
+		return fares[middle]
+	} else {
+		return (fares[middle-1] + fares[middle])/2 
+	}
 }
 
 // 18 --------------------------------------------------------------
@@ -208,14 +234,28 @@ const getMedianFare = (data) => {
 // available. 
 
 const getAverageAge = (data) => {
-	return 0
+	const passengers = data.filter(passenger => 'age' in passenger.fields)
+	return passengers.reduce((prev, curr) => prev + curr.fields.age, 0)/passengers.length
 }
 
 // 19 --------------------------------------------------------------
 // Return the median age from passengers.
 
 const getMedianAge = (data) => {
-	return 0
+	const passengers = data.filter(passenger => 'age' in passenger.fields)
+	const ages = []
+	for (passenger of passengers) { 
+		ages.push(passenger.fields.age)
+	}
+	ages.sort((a, b) => a - b)
+
+	const middle = Math.floor(passengers.length/2)
+
+	if (passengers.length % 2 === 1) {
+		return ages[middle]
+	} else {
+		return (ages[middle-1] + ages[middle])/2 
+	}
 }
 
 // 20 --------------------------------------------------------------
@@ -223,7 +263,9 @@ const getMedianAge = (data) => {
 // the total number. 
 
 const getAverageAgeByGender = (data, gender) => {
-	return 0
+	let passengers = data.filter((passenger) => passenger.fields.sex === gender)
+	passengers = passengers.filter((passenger) => 'age' in passenger.fields)
+	return passengers.reduce((prev, curr) => prev + curr.fields.age, 0)/passengers.length
 }
 
 // --------------------------------------------------------------
