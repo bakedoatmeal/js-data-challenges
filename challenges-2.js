@@ -25,7 +25,7 @@
 // Or if property = 'age' -> [40, 26, 22, 28, 23, 45, 21, ...]
 
 const getAllValuesForProperty = (data, property) => {
-	return []
+	return data.map((passenger) => passenger.fields[property])
 }
 
 // 2 -------------------------------------------------------------
@@ -34,7 +34,7 @@ const getAllValuesForProperty = (data, property) => {
 // array of all the male passengers [{...}, {...}, {...}, ...]
 
 const filterByProperty = (data, property, value) => {
-	return []
+	return data.filter((passenger) => passenger.fields[property] === value)
 }
 
 // 3 -------------------------------------------------------------
@@ -43,7 +43,7 @@ const filterByProperty = (data, property, value) => {
 // given property have been removed
 
 const filterNullForProperty = (data, property) => {
-	return []
+	return data.filter((passenger) => property in passenger.fields)
 }
 
 // 4 -------------------------------------------------------------
@@ -52,7 +52,9 @@ const filterNullForProperty = (data, property) => {
 // Return the total of all values for a given property. This
 
 const sumAllProperty = (data, property) => {
-	return 0
+	const passengers = data.filter((passenger) => property in passenger.fields)
+	const sum = passengers.reduce((prev, curr) => prev + curr.fields[property], 0)
+	return sum
 }
 
 
@@ -67,7 +69,19 @@ const sumAllProperty = (data, property) => {
 // at Cherbourg, 77 emabrked at Queenstown, and 2 are undedfined
 
 const countAllProperty = (data, property) => {
-	return {}
+	const hist = {}
+	const passengers = data.filter((passenger) => property in passenger.fields)
+	if (data.length - passengers.length > 0) {
+		hist.undefined = data.length - passengers.length
+	}
+	for (const passenger of passengers) {
+		if (passenger.fields[property] in hist) {
+			hist[passenger.fields[property]] += 1
+		} else {
+			hist[passenger.fields[property]] = 1
+		}
+	}
+	return hist
 }
 
 
@@ -77,7 +91,22 @@ const countAllProperty = (data, property) => {
 // of items in each bucket.
 
 const makeHistogram = (data, property, step) => {
-	return []
+	const passengers = data.filter((passenger) => property in passenger.fields)
+	const array = passengers.reduce((prev, passenger) => {
+		if (prev[Math.floor(passenger.fields[property] / step)] === undefined) {
+			prev[Math.floor(passenger.fields[property] / step)] = 1
+			// console.log(prev[Math.floor(passenger.fields[property] / step)])
+		} else {
+			prev[Math.floor(passenger.fields[property] / step)] += 1
+		}
+		return prev
+	}, [])
+	for (let i = 0; i < array.length; i ++ ) {
+		if (array[i] === undefined) {
+			array[i] = 0
+		}
+	}
+	return array
 }
 
 // 7 ------------------------------------------------------------
@@ -86,7 +115,16 @@ const makeHistogram = (data, property, step) => {
 // to divide each value by the maximum value in the array.
 
 const normalizeProperty = (data, property) => {
-	return []
+	 let max = 0
+	 const passengers = data.filter((passenger) => property in passenger.fields)
+	 const values = passengers.map((passenger) => {
+		 if (passenger.fields[property] > max) {
+			 max = passenger.fields[property]
+		 }
+		 return passenger.fields[property]
+	 })
+	 const normalized = values.map((value) => value / max) 
+	 return normalized
 }
 
 // 8 ------------------------------------------------------------
@@ -97,7 +135,13 @@ const normalizeProperty = (data, property) => {
 // would return ['male', 'female']
 
 const getUniqueValues = (data, property) => {
-	return []
+	const values = data.reduce((values, passenger) => {
+		if (!values.includes(passenger.fields[property])) {
+			values.push(passenger.fields[property])
+		} 
+		return values
+	}, [])
+	return values
 }
 
 // --------------------------------------------------------------
