@@ -69,19 +69,24 @@ const sumAllProperty = (data, property) => {
 // at Cherbourg, 77 emabrked at Queenstown, and 2 are undedfined
 
 const countAllProperty = (data, property) => {
-	const hist = {}
 	const passengers = data.filter((passenger) => property in passenger.fields)
+	
+	let hist = {}
+
 	if (data.length - passengers.length > 0) {
 		hist.undefined = data.length - passengers.length
 	}
-	for (const passenger of passengers) {
-		if (passenger.fields[property] in hist) {
-			hist[passenger.fields[property]] += 1
+
+	hist = passengers.reduce((prev, passenger) => {
+		if (passenger.fields[property] in prev) {
+			prev[passenger.fields[property]] += 1
 		} else {
-			hist[passenger.fields[property]] = 1
+			prev[passenger.fields[property]] = 1
 		}
-	}
-	return hist
+		return prev
+	}, hist)
+
+	return hist 
 }
 
 
