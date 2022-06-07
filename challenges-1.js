@@ -213,10 +213,10 @@ const getAverageFare = (data) => {
 const getMedianFare = (data) => {
 	const passengers = data.filter((passenger) => 'fare' in passenger.fields)
 	const passengerCount = passengers.length
-	const fares = []
-	for (let i = 0; i < passengers.length; i++) {
-		fares.push(passengers[i].fields.fare)
-	}
+	const fares = passengers.map(passenger => passenger.fields.fare)
+	// for (let i = 0; i < passengers.length; i++) {
+	// 	fares.push(passengers[i].fields.fare)
+	// }
 
 	fares.sort((a, b) => a - b)
 	const middle = Math.floor(passengerCount/2)
